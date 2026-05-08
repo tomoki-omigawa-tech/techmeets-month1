@@ -58,6 +58,23 @@
       border-color: #6366f1;
     }
 
+    .priority-select {
+      padding: 10px 10px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      background: #fff;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .priority-select:focus {
+      border-color: #6366f1;
+    }
+
     .input-row button {
       padding: 10px 18px;
       background: #6366f1;
@@ -104,6 +121,29 @@
     .task-item.done .task-text {
       text-decoration: line-through;
       color: #9ca3af;
+    }
+
+    .task-item.high {
+      background: #fff5f5;
+      border-color: #fca5a5;
+    }
+
+    .priority-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      letter-spacing: 0.03em;
+    }
+
+    .priority-badge.high {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .priority-badge.normal {
+      display: none;
     }
 
     .delete-btn {
@@ -175,6 +215,10 @@
     <p class="counter" id="counter">完了 <span id="done-count">0</span> / <span id="total-count">0</span> 件</p>
     <div class="input-row">
       <input type="text" id="task-input" placeholder="タスクを入力..." />
+      <select id="priority-select" class="priority-select">
+        <option value="normal">普通</option>
+        <option value="high">重要</option>
+      </select>
       <button onclick="addTask()">追加</button>
     </div>
     <ul id="task-list"></ul>
@@ -190,7 +234,11 @@
 
     function createTaskItem(task, index) {
       const li = document.createElement('li');
-      li.className = 'task-item' + (task.done ? ' done' : '');
+      li.className = 'task-item' + (task.done ? ' done' : '') + (task.priority === 'high' ? ' high' : '');
+
+      const badge = document.createElement('span');
+      badge.className = 'priority-badge ' + task.priority;
+      badge.textContent = '重要';
 
       const span = document.createElement('span');
       span.className = 'task-text';
@@ -202,6 +250,7 @@
       btn.textContent = '削除';
       btn.onclick = () => deleteTask(index);
 
+      li.appendChild(badge);
       li.appendChild(span);
       li.appendChild(btn);
       return li;
@@ -247,7 +296,8 @@
       const text = input.value.trim();
       if (!text) return;
 
-      tasks.push({ text, done: false });
+      const priority = document.getElementById('priority-select').value;
+      tasks.push({ text, done: false, priority });
       input.value = '';
       input.focus();
       render();
