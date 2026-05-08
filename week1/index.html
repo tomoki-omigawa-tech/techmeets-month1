@@ -38,14 +38,15 @@
       text-align: center;
     }
 
-    .input-row {
+    .input-area {
       display: flex;
+      flex-direction: column;
       gap: 8px;
       margin-bottom: 24px;
     }
 
-    .input-row input {
-      flex: 1;
+    .input-area > input[type="text"] {
+      width: 100%;
       padding: 10px 14px;
       border: 1.5px solid #d1d5db;
       border-radius: 8px;
@@ -54,8 +55,13 @@
       transition: border-color 0.2s;
     }
 
-    .input-row input:focus {
+    .input-area > input[type="text"]:focus {
       border-color: #6366f1;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
     }
 
     .priority-select {
@@ -75,6 +81,23 @@
       border-color: #6366f1;
     }
 
+    .date-input {
+      flex: 1;
+      padding: 10px 10px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      color: #374151;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .date-input:focus {
+      border-color: #6366f1;
+    }
+
     .input-row button {
       padding: 10px 18px;
       background: #6366f1;
@@ -85,6 +108,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
+      flex-shrink: 0;
     }
 
     .input-row button:hover {
@@ -126,6 +150,41 @@
     .task-item.high {
       background: #fff5f5;
       border-color: #fca5a5;
+    }
+
+    .task-item.due-today {
+      background: #fefce8;
+      border-color: #fbbf24;
+    }
+
+    .task-item.overdue {
+      background: #fee2e2;
+      border-color: #dc2626;
+    }
+
+    .deadline-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    .deadline-badge.normal {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .deadline-badge.due-today {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .deadline-badge.overdue {
+      background: #fee2e2;
+      color: #dc2626;
     }
 
     .priority-badge {
@@ -213,13 +272,16 @@
   <div class="container">
     <h1>ToDoリスト</h1>
     <p class="counter" id="counter">完了 <span id="done-count">0</span> / <span id="total-count">0</span> 件</p>
-    <div class="input-row">
+    <div class="input-area">
       <input type="text" id="task-input" placeholder="タスクを入力..." />
-      <select id="priority-select" class="priority-select">
-        <option value="normal">普通</option>
-        <option value="high">重要</option>
-      </select>
-      <button onclick="addTask()">追加</button>
+      <div class="input-row">
+        <select id="priority-select" class="priority-select">
+          <option value="normal">普通</option>
+          <option value="high">重要</option>
+        </select>
+        <input type="date" id="due-date" class="date-input" />
+        <button onclick="addTask()">追加</button>
+      </div>
     </div>
     <ul id="task-list"></ul>
 
@@ -232,9 +294,33 @@
   <script>
     const tasks = [];
 
+    function getTodayStr() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function getDeadlineStatus(dueDate) {
+      if (!dueDate) return null;
+      const today = getTodayStr();
+      if (dueDate < today) return 'overdue';
+      if (dueDate === today) return 'due-today';
+      return 'normal';
+    }
+
     function createTaskItem(task, index) {
+      const deadlineStatus = (!task.done && task.dueDate) ? getDeadlineStatus(task.dueDate) : null;
+
+      let className = 'task-item';
+      if (task.done) className += ' done';
+      if (task.priority === 'high') className += ' high';
+      if (deadlineStatus === 'due-today') className += ' due-today';
+      if (deadlineStatus === 'overdue') className += ' overdue';
+
       const li = document.createElement('li');
-      li.className = 'task-item' + (task.done ? ' done' : '') + (task.priority === 'high' ? ' high' : '');
+      li.className = className;
 
       const badge = document.createElement('span');
       badge.className = 'priority-badge ' + task.priority;
@@ -252,6 +338,19 @@
 
       li.appendChild(badge);
       li.appendChild(span);
+
+      if (task.dueDate) {
+        const [y, m, d] = task.dueDate.split('-');
+        const badgeClass = task.done ? 'normal' : (deadlineStatus || 'normal');
+        const label = (!task.done && deadlineStatus === 'overdue')
+          ? `期限切れ ${m}/${d}`
+          : `期限 ${m}/${d}`;
+        const deadlineBadge = document.createElement('span');
+        deadlineBadge.className = 'deadline-badge ' + badgeClass;
+        deadlineBadge.textContent = label;
+        li.appendChild(deadlineBadge);
+      }
+
       li.appendChild(btn);
       return li;
     }
@@ -297,8 +396,10 @@
       if (!text) return;
 
       const priority = document.getElementById('priority-select').value;
-      tasks.push({ text, done: false, priority });
+      const dueDate = document.getElementById('due-date').value;
+      tasks.push({ text, done: false, priority, dueDate });
       input.value = '';
+      document.getElementById('due-date').value = '';
       input.focus();
       render();
     }
