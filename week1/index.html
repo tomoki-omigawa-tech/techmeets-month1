@@ -141,6 +141,32 @@
       font-weight: 600;
       color: #6366f1;
     }
+
+    .section-heading {
+      font-size: 14px;
+      font-weight: 600;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1.5px solid #e5e7eb;
+    }
+
+    #done-section {
+      display: none;
+    }
+
+    #done-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #done-list .task-item {
+      opacity: 0.6;
+    }
   </style>
 </head>
 <body>
@@ -152,45 +178,68 @@
       <button onclick="addTask()">追加</button>
     </div>
     <ul id="task-list"></ul>
+
+    <div id="done-section">
+      <h2 class="section-heading">完了済み</h2>
+      <ul id="done-list"></ul>
+    </div>
   </div>
 
   <script>
     const tasks = [];
 
-    function render() {
-      const list = document.getElementById('task-list');
-      list.textContent = '';
+    function createTaskItem(task, index) {
+      const li = document.createElement('li');
+      li.className = 'task-item' + (task.done ? ' done' : '');
 
-      const done = tasks.filter(t => t.done).length;
-      document.getElementById('done-count').textContent = done;
+      const span = document.createElement('span');
+      span.className = 'task-text';
+      span.textContent = task.text;
+      span.onclick = () => toggleTask(index);
+
+      const btn = document.createElement('button');
+      btn.className = 'delete-btn';
+      btn.textContent = '削除';
+      btn.onclick = () => deleteTask(index);
+
+      li.appendChild(span);
+      li.appendChild(btn);
+      return li;
+    }
+
+    function render() {
+      const pendingList = document.getElementById('task-list');
+      const doneList = document.getElementById('done-list');
+      const doneSection = document.getElementById('done-section');
+
+      pendingList.textContent = '';
+      doneList.textContent = '';
+
+      const doneTasks = tasks.filter(t => t.done);
+      document.getElementById('done-count').textContent = doneTasks.length;
       document.getElementById('total-count').textContent = tasks.length;
 
-      if (tasks.length === 0) {
+      const pending = tasks.filter(t => !t.done);
+
+      if (pending.length === 0) {
         const msg = document.createElement('p');
         msg.className = 'empty-msg';
         msg.textContent = 'タスクがありません';
-        list.appendChild(msg);
-        return;
+        pendingList.appendChild(msg);
+      } else {
+        tasks.forEach((task, index) => {
+          if (!task.done) pendingList.appendChild(createTaskItem(task, index));
+        });
       }
 
-      tasks.forEach((task, index) => {
-        const li = document.createElement('li');
-        li.className = 'task-item' + (task.done ? ' done' : '');
-
-        const span = document.createElement('span');
-        span.className = 'task-text';
-        span.textContent = task.text;
-        span.onclick = () => toggleTask(index);
-
-        const btn = document.createElement('button');
-        btn.className = 'delete-btn';
-        btn.textContent = '削除';
-        btn.onclick = () => deleteTask(index);
-
-        li.appendChild(span);
-        li.appendChild(btn);
-        list.appendChild(li);
-      });
+      if (doneTasks.length === 0) {
+        doneSection.style.display = 'none';
+      } else {
+        doneSection.style.display = 'block';
+        tasks.forEach((task, index) => {
+          if (task.done) doneList.appendChild(createTaskItem(task, index));
+        });
+      }
     }
 
     function addTask() {
