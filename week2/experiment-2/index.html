@@ -1,0 +1,507 @@
+
+
+今追加したフィルター機能を、以下の要件で作り直してください。
+
+追加するフィルターは以下の2種類:
+1. 「すべて」「未完了のみ」「完了済みのみ」を切り替えるボタン
+2. タスク名をキーワードで絞り込む検索ボックス
+
+既存の追加・完了・削除の機能は変えないでください。
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --border: #2a2a38;
+      --accent: #7c6ff7;
+      --accent-dim: #4d49a8;
+      --text: #e8e8f0;
+      --muted: #888899;
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 48px;
+      background: rgba(15, 15, 19, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo { font-weight: 700; font-size: 1.1rem; color: var(--accent); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 32px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--text); }
+
+    /* ---- HERO ---- */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 48px 80px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero-content { max-width: 600px; }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      background: rgba(124, 111, 247, 0.15);
+      border: 1px solid var(--accent-dim);
+      border-radius: 99px;
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 36px;
+      max-width: 480px;
+    }
+
+    .btn-group { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .btn {
+      padding: 12px 28px;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* ---- SECTIONS ---- */
+    section { padding: 80px 48px; max-width: 900px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700;
+      margin-bottom: 48px;
+    }
+
+    /* ---- ABOUT ---- */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .about-grid p { color: var(--muted); line-height: 1.8; }
+
+    .stats {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .stat-label { font-size: 0.85rem; color: var(--muted); }
+
+    /* ---- SKILLS ---- */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .skill-card h3 { font-size: 0.95rem; margin-bottom: 16px; }
+
+    .skill-bar-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+    .skill-bar-item { display: flex; flex-direction: column; gap: 4px; }
+
+    .skill-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .skill-bar-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      width: 0;
+      transition: width 1s ease;
+    }
+
+    /* ---- PROJECTS ---- */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent-dim);
+      transform: translateY(-4px);
+    }
+
+    .project-icon { font-size: 1.8rem; }
+
+    .project-card h3 { font-size: 1rem; font-weight: 600; }
+
+    .project-card p { font-size: 0.875rem; color: var(--muted); flex: 1; }
+
+    .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .tag {
+      padding: 2px 10px;
+      background: rgba(124, 111, 247, 0.12);
+      border: 1px solid var(--accent-dim);
+      border-radius: 99px;
+      font-size: 0.75rem;
+      color: var(--accent);
+    }
+
+    /* ---- CONTACT ---- */
+    .contact-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px;
+      text-align: center;
+    }
+
+    .contact-box p { color: var(--muted); margin: 12px 0 32px; }
+
+    .social-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .social-link:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ---- FOOTER ---- */
+    footer {
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 640px) {
+      nav { padding: 16px 24px; }
+      nav ul { gap: 20px; }
+      .hero { padding: 100px 24px 60px; }
+      section { padding: 60px 24px; }
+      .about-grid { grid-template-columns: 1fr; }
+      .contact-box { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">Portfolio</span>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-content">
+      <span class="hero-badge">Open to work</span>
+      <h1>こんにちは、<br><span>Tomoki</span> です。</h1>
+      <p>フルスタックエンジニアとして、ユーザー体験を重視したプロダクト開発をしています。コードを書くことと、チームで問題を解決することが好きです。</p>
+      <div class="btn-group">
+        <a href="#projects" class="btn btn-primary">プロジェクトを見る</a>
+        <a href="#contact" class="btn btn-ghost">連絡する</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <p class="section-label">About</p>
+    <h2 class="section-title">私について</h2>
+    <div class="about-grid">
+      <div>
+        <p>5年以上のソフトウェア開発経験を持つエンジニアです。フロントエンドからバックエンドまで幅広く対応し、スタートアップから大規模サービスまで様々な環境で開発を行ってきました。</p>
+        <br>
+        <p>ユーザーが使いやすいインターフェースの設計と、スケーラブルなシステムアーキテクチャの両立を追求しています。</p>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-num">5+</div>
+          <div class="stat-label">年の開発経験</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">20+</div>
+          <div class="stat-label">完成したプロジェクト</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">コーヒーの杯数</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <p class="section-label">Skills</p>
+    <h2 class="section-title">技術スタック</h2>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <h3>Frontend</h3>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>React / Next.js</span><span>90%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="90"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>TypeScript</span><span>85%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="85"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>CSS / Tailwind</span><span>80%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="80"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>Backend</h3>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>Node.js / Express</span><span>85%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="85"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>Python / FastAPI</span><span>75%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="75"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>PostgreSQL</span><span>70%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="70"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-card">
+        <h3>Tools & Infra</h3>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>Git / GitHub</span><span>90%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="90"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>Docker</span><span>70%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="70"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>AWS / Vercel</span><span>65%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="65"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <p class="section-label">Projects</p>
+    <h2 class="section-title">プロジェクト</h2>
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="project-icon">🛒</div>
+        <h3>ECサイトプラットフォーム</h3>
+        <p>Next.js + Stripe を使った EC サイト。カート・決済・注文管理機能を実装。</p>
+        <div class="tags">
+          <span class="tag">Next.js</span>
+          <span class="tag">Stripe</span>
+          <span class="tag">PostgreSQL</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-icon">💬</div>
+        <h3>リアルタイムチャットアプリ</h3>
+        <p>WebSocket を使ったリアルタイムチャット。ルーム機能・既読管理を実装。</p>
+        <div class="tags">
+          <span class="tag">React</span>
+          <span class="tag">Socket.io</span>
+          <span class="tag">Node.js</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-icon">📊</div>
+        <h3>データ可視化ダッシュボード</h3>
+        <p>CSV・APIデータをリアルタイムで可視化。フィルタリング・エクスポート機能付き。</p>
+        <div class="tags">
+          <span class="tag">React</span>
+          <span class="tag">D3.js</span>
+          <span class="tag">FastAPI</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <p class="section-label">Contact</p>
+    <h2 class="section-title">連絡先</h2>
+    <div class="contact-box">
+      <h3 style="font-size: 1.4rem;">一緒に何か作りましょう</h3>
+      <p>お仕事の依頼・ご相談・雑談など、お気軽にどうぞ。</p>
+      <div class="social-links">
+        <a href="mailto:tomoki.omigawa@gmail.com" class="social-link">
+          ✉️ Email
+        </a>
+        <a href="https://github.com/" target="_blank" class="social-link">
+          🐙 GitHub
+        </a>
+        <a href="https://twitter.com/" target="_blank" class="social-link">
+          𝕏 Twitter
+        </a>
+        <a href="https://www.linkedin.com/" target="_blank" class="social-link">
+          💼 LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Tomoki. Built with HTML & CSS.</p>
+  </footer>
+
+  <script>
+    // スキルバーアニメーション（スクロール時）
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width + '%';
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('.skill-card').forEach(card => observer.observe(card));
+  </script>
+
+</body>
+</html>
