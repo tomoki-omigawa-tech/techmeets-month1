@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>好きな映画まとめ</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #fff;
+    }
+
+    header h1 span {
+      color: #e2b04a;
+    }
+
+    header p {
+      margin-top: 10px;
+      color: #888;
+      font-size: 1rem;
+    }
+
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      justify-content: center;
+      padding: 0 40px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #1a1a2e;
+      border-radius: 14px;
+      overflow: hidden;
+      width: 300px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: default;
+    }
+
+    .card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(226, 176, 74, 0.25);
+    }
+
+    .card-img-wrapper {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      background: #2a2a40;
+    }
+
+    .card-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      filter: brightness(0.85);
+    }
+
+    .card:hover .card-img-wrapper img {
+      transform: scale(1.08);
+      filter: brightness(1);
+    }
+
+    .card-img-wrapper .year {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.65);
+      color: #ccc;
+      font-size: 0.78rem;
+      padding: 3px 8px;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .card-body {
+      padding: 18px 20px 22px;
+    }
+
+    .badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .badge-sci-fi   { background: #1e3a5f; color: #6db3f2; }
+    .badge-thriller { background: #3b1e1e; color: #f26d6d; }
+    .badge-drama    { background: #1e3b2e; color: #6df2a8; }
+    .badge-action   { background: #3b2e1e; color: #f2a86d; }
+    .badge-fantasy  { background: #2e1e3b; color: #c06df2; }
+    .badge-crime    { background: #2a2a1e; color: #e8e86d; }
+    .badge-romance  { background: #3b1e2e; color: #f26db3; }
+    .badge-mystery  { background: #1e2e3b; color: #6de8f2; }
+    .badge-war      { background: #2e2e1e; color: #b0b06d; }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: #999;
+      line-height: 1.65;
+    }
+
+    .card-footer {
+      padding: 12px 20px 16px;
+      border-top: 1px solid #2a2a40;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rating {
+      color: #e2b04a;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .rating-label {
+      color: #666;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>My Favorite <span>Movies</span></h1>
+  <p>心に残った映画たちを紹介します</p>
+</header>
+
+<div class="card-grid">
+
+  <!-- 1 -->
+  <div class="card">
+    <div class="card-img-wrapper">
+      <img src="https://placehold.co/300x200/1a1a3e/6db3f2?text=Interstellar" alt="Interstellar">
+      <span class="year">2014</span>
+    </div>
+    <div class="card-body">
+      <div class="badge-list">
+        <span class="badge badge-sci-fi">SF</span>
+        <span class="badge badge-drama">ドラマ</span>
+      </div>
+      <div class="card-title">インターステラー</div>
+      <div class="card-desc">滅びゆく地球を救うため、宇宙へと旅立つ父と娘の絆を描く壮大なSF叙事詩。クリストファー・ノーラン監督の圧倒的なビジョンと感情的な深みが共存する傑作。</div>
+    </div>
+    <div class="card-footer">
+      <span class="rating">★ 9.4</span>
+      <span class="rating-label">/ 10</span>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <div class="card-img-wrapper">
+      <img src="https://placehold.co/300x200/3e1a1a/f26d6d?text=Parasite" alt="Parasite">
+      <span class="year">2019</span>
+    </div>
+    <div class="card-body">
+      <div class="badge-list">
+        <span class="badge badge-thriller">スリラー</span>
+        <span class="badge badge-crime">犯罪</span>
+        <span class="badge badge-drama">ドラマ</span>
+      </div>
+      <div class="card-title">パラサイト 半地下の家族</div>
+      <div class="card-desc">貧困家族が富裕層の家に次々と寄生していくことで巻き起こる予測不可能な物語。ポン・ジュノ監督が描く階級格差の風刺とサスペンスが見事に融合した一作。</div>
+    </div>
+    <div class="card-footer">
+      <span class="rating">★ 9.2</span>
+      <span class="rating-label">/ 10</span>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <div class="card-img-wrapper">
+      <img src="https://placehold.co/300x200/1a3b1e/6df2a8?text=Princess+Mononoke" alt="Princess Mononoke">
+      <span class="year">1997</span>
+    </div>
+    <div class="card-body">
+      <div class="badge-list">
+        <span class="badge badge-fantasy">ファンタジー</span>
+        <span class="badge badge-action">アクション</span>
+      </div>
+      <div class="card-title">もののけ姫</div>
+      <div class="card-desc">人間と自然の相克を壮大なスケールで描いた宮崎駿の不朽の名作。善悪の二項対立を超えた複雑な世界観と圧巻のアニメーション表現が今なお色あせない。</div>
+    </div>
+    <div class="card-footer">
+      <span class="rating">★ 9.1</span>
+      <span class="rating-label">/ 10</span>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="card">
+    <div class="card-img-wrapper">
+      <img src="https://placehold.co/300x200/2e1e3b/c06df2?text=Inception" alt="Inception">
+      <span class="year">2010</span>
+    </div>
+    <div class="card-body">
+      <div class="badge-list">
+        <span class="badge badge-sci-fi">SF</span>
+        <span class="badge badge-fantasy">ファンタジー</span>
+        <span class="badge badge-action">アクション</span>
+      </div>
+      <div class="card-title">インセプション</div>
+      <div class="card-desc">夢の中に潜入してアイデアを植え付ける「インセプション」を巡る頭脳戦。多層構造の夢世界と圧倒的な映像美で観る者を翻弄し続けるノーラン映画の極致。</div>
+    </div>
+    <div class="card-footer">
+      <span class="rating">★ 8.9</span>
+      <span class="rating-label">/ 10</span>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <div class="card-img-wrapper">
+      <img src="https://placehold.co/300x200/2a2a1e/e8e86d?text=Schindler%27s+List" alt="Schindler's List">
+      <span class="year">1993</span>
+    </div>
+    <div class="card-body">
+      <div class="badge-list">
+        <span class="badge badge-drama">ドラマ</span>
+        <span class="badge badge-war">戦争</span>
+        <span class="badge badge-crime">歴史</span>
+      </div>
+      <div class="card-title">シンドラーのリスト</div>
+      <div class="card-desc">第二次大戦下のホロコーストから1100人以上のユダヤ人を救ったオスカー・シンドラーの実話。スピルバーグが白黒映像で紡ぐ重厚な人間ドラマ。</div>
+    </div>
+    <div class="card-footer">
+      <span class="rating">★ 9.0</span>
+      <span class="rating-label">/ 10</span>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <div class="card-img-wrapper">
+      <img src="https://placehold.co/300x200/1e2e3b/6de8f2?text=Your+Name" alt="Your Name">
+      <span class="year">2016</span>
+    </div>
+    <div class="card-body">
+      <div class="badge-list">
+        <span class="badge badge-romance">ロマンス</span>
+        <span class="badge badge-fantasy">ファンタジー</span>
+        <span class="badge badge-mystery">ミステリ</span>
+      </div>
+      <div class="card-title">君の名は。</div>
+      <div class="card-desc">東京の少年と田舎の少女が夢の中で入れ替わる不思議な体験から始まる、時を超えた純愛物語。新海誠監督の繊細な映像美と音楽が感動を呼ぶ大ヒット作。</div>
+    </div>
+    <div class="card-footer">
+      <span class="rating">★ 8.8</span>
+      <span class="rating-label">/ 10</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
