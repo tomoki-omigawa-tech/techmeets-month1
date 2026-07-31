@@ -1,0 +1,6 @@
+# SQLiteデータベースファイル（テストデータを含むためコミットしない）
+week8-bbs/bbs.sqlite
+
+# OS/エディタ系
+.DS_Store
+Thumbs.db
